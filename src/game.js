@@ -1,3 +1,14 @@
+/**
+ * Conway's Game of Life
+ *
+ * Guidelines for 2 players:
+ * - Cell types: Three types of cells will be present: Dead (0), Team A (1), Team B (2)
+ * - Birth of cells: A dead cell becomes a live cell of a particular team if the majority of its three contributing neighbors are from one team. If there is a tie, the cell remains dead.
+ * - Survival of cells: A cell remains alive if it has 2 or 3 live neighbors (similar to the standard Game of Life). If a live cell is surrounded by more cells from the opposing team than its own (and still within the 2 or 3 live neighbors rule), it converts to the opposing team's type in the next generation.
+ * - Death of cells: A cell dies if it has fewer than 2 or more than 3 live neighbors, due to underpopulation or overpopulation.
+ *
+ */
+
 let gameLoopIterations = 100;
 
 const canvas = document.getElementById("gameCanvas");
