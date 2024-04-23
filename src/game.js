@@ -9,7 +9,7 @@
  *
  */
 
-let gameLoopIterations = 1000;
+let gameLoopIterations = 10000;
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -22,8 +22,7 @@ let board = Array.from({ length: rows }, () => Array(cols).fill(0));
 function initializeBoard() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
-      // multiply by 3 so that:
-      // 0 means dead cell, 1 means team A, 2 means team B
+      // Multiply by 3 so that: 0 means dead cell, 1 means team A, 2 means team B
       board[i][j] = Math.floor(Math.random() * 3);
     }
   }
@@ -34,11 +33,11 @@ function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
-      // add a border to the cells
+      // Add a border to the cells
       ctx.strokeStyle = "black";
       ctx.strokeRect(j * cellSize, i * cellSize, cellSize, cellSize);
 
-      // fill the board with cells based on each team's color of the cell's value
+      // Fill the board with cells based on each team's color of the cell's value
       ctx.fillStyle =
         board[i][j] === 1 ? "blue" : board[i][j] === 2 ? "red" : "white";
       ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
@@ -50,21 +49,53 @@ function updateBoard() {
   let newBoard = board.map((row) => [...row]);
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
-      let liveNeighbors = 0;
+      // Calculate the number of live neighbors for each team across all 8 directions of a given cell in r,c
+      let liveNeighbors = { total: 0, teamA: 0, teamB: 0 };
       for (let shadowRow = -1; shadowRow <= 1; shadowRow++) {
         for (let shadowCol = -1; shadowCol <= 1; shadowCol++) {
           if (shadowRow === 0 && shadowCol === 0) continue;
           let x = r + shadowRow;
           let y = c + shadowCol;
+
           if (x >= 0 && x < rows && y >= 0 && y < cols) {
-            liveNeighbors += board[x][y];
+            if (board[x][y] !== 0) {
+              liveNeighbors.total++;
+
+              if (board[x][y] === 1) {
+                liveNeighbors.teamA++;
+              } else {
+                liveNeighbors.teamB++;
+              }
+            }
           }
         }
       }
-      if (board[r][c] === 1 && (liveNeighbors < 2 || liveNeighbors > 3)) {
-        newBoard[r][c] = 0;
-      } else if (board[r][c] === 0 && liveNeighbors === 3) {
-        newBoard[r][c] = 1;
+
+      // Next, we update the board based on the rules of the game
+      let currentCell = board[r][c];
+      if (currentCell === 0) {
+        // A dead cell becomes a live cell of a particular team if the majority of its three contributing neighbors are from one team:
+        if (liveNeighbors.teamA === 3 && liveNeighbors.teamB < 3) {
+          newBoard[r][c] = 1;
+        } else if (liveNeighbors.teamB === 3 && liveNeighbors.teamA < 3) {
+          newBoard[r][c] = 2;
+        }
+        // Otherwise, there's a tie between the teams, so the cell remains dead
+      } else {
+        // Now we're dealing with living cells, and so;
+        // The cell dies from under/overpopulation, regardless of team
+        if (liveNeighbors.total < 2 || liveNeighbors.total > 3) {
+          newBoard[r][c] = 0;
+        } else {
+          // Check which team has the majority of live neighbors and they win the cell
+          if (currentCell === 1 && liveNeighbors.teamA > liveNeighbors.teamB)
+            newBoard[r][c] = 2;
+          else if (
+            currentCell === 2 &&
+            liveNeighbors.teamA > liveNeighbors.teamB
+          )
+            newBoard[r][c] = 1;
+        }
       }
     }
   }
@@ -82,7 +113,7 @@ function gameLoop() {
     updateBoard();
     draw();
     requestAnimationFrame(gameLoop);
-  }, 100);
+  }, 10);
 }
 
 initializeBoard();
