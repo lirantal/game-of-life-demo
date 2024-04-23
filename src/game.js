@@ -9,7 +9,7 @@
  *
  */
 
-let gameLoopIterations = 10000;
+let gameLoopIterations = 1000;
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -20,12 +20,21 @@ let board = Array.from({ length: rows }, () => Array(cols).fill(0));
 
 // Initialize the board with random cells
 function initializeBoard() {
+  let cellsCountPerEachTeam = {};
+
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       // Multiply by 3 so that: 0 means dead cell, 1 means team A, 2 means team B
       board[i][j] = Math.floor(Math.random() * 3);
+      if (board[i][j] === 1) {
+        cellsCountPerEachTeam.teamA = (cellsCountPerEachTeam.teamA || 0) + 1;
+      } else if (board[i][j] === 2) {
+        cellsCountPerEachTeam.teamB = (cellsCountPerEachTeam.teamB || 0) + 1;
+      }
     }
   }
+
+  console.log("Initial cells count per each team: ", cellsCountPerEachTeam);
 }
 
 // Draw the board
@@ -88,13 +97,14 @@ function updateBoard() {
           newBoard[r][c] = 0;
         } else {
           // Check which team has the majority of live neighbors and they win the cell
-          if (currentCell === 1 && liveNeighbors.teamA > liveNeighbors.teamB)
+          if (currentCell === 1 && liveNeighbors.teamB > liveNeighbors.teamA) {
             newBoard[r][c] = 2;
-          else if (
+          } else if (
             currentCell === 2 &&
             liveNeighbors.teamA > liveNeighbors.teamB
-          )
+          ) {
             newBoard[r][c] = 1;
+          }
         }
       }
     }
@@ -113,7 +123,7 @@ function gameLoop() {
     updateBoard();
     draw();
     requestAnimationFrame(gameLoop);
-  }, 10);
+  }, 5);
 }
 
 initializeBoard();
