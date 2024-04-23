@@ -9,7 +9,7 @@
  *
  */
 
-let gameLoopIterations = 100;
+let gameLoopIterations = 1000;
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -35,11 +35,12 @@ function draw() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       // add a border to the cells
-      ctx.strokeStyle = "red";
+      ctx.strokeStyle = "black";
       ctx.strokeRect(j * cellSize, i * cellSize, cellSize, cellSize);
 
-      // fill the cell with black or white based on the cell value
-      ctx.fillStyle = board[i][j] ? "black" : "white";
+      // fill the board with cells based on each team's color of the cell's value
+      ctx.fillStyle =
+        board[i][j] === 1 ? "blue" : board[i][j] === 2 ? "red" : "white";
       ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
     }
   }
@@ -81,7 +82,7 @@ function gameLoop() {
     updateBoard();
     draw();
     requestAnimationFrame(gameLoop);
-  }, 10);
+  }, 100);
 }
 
 initializeBoard();
