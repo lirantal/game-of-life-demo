@@ -55,6 +55,11 @@ function updateBoard() {
 
 // Main loop
 function gameLoop() {
+  gameLoopIterations--;
+  if (gameLoopIterations <= 0) {
+    return;
+  }
+
   setTimeout(() => {
     updateBoard();
     draw();
