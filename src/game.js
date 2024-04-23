@@ -55,9 +55,11 @@ function updateBoard() {
 
 // Main loop
 function gameLoop() {
-  updateBoard();
-  draw();
-  requestAnimationFrame(gameLoop);
+  setTimeout(() => {
+    updateBoard();
+    draw();
+    requestAnimationFrame(gameLoop);
+  }, 10);
 }
 
 initializeBoard();
