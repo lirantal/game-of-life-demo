@@ -22,7 +22,9 @@ let board = Array.from({ length: rows }, () => Array(cols).fill(0));
 function initializeBoard() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
-      board[i][j] = Math.floor(Math.random() * 2);
+      // multiply by 3 so that:
+      // 0 means dead cell, 1 means team A, 2 means team B
+      board[i][j] = Math.floor(Math.random() * 3);
     }
   }
 }
