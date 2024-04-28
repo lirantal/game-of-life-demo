@@ -36,7 +36,7 @@ function initializeBoard() {
           (cellsCountPerEachTeam.teamA || 0) + deadOrAlive;
       }
 
-      if (r > rows / 2 + 1) {
+      if (r >= rows / 2) {
         // Team B's half
         let deadOrAlive = Math.floor(Math.random() * 2);
         board[r][c] = deadOrAlive === 0 ? 2 : 0;
