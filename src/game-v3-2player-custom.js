@@ -28,18 +28,18 @@ function initializeBoard() {
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
-      if (r < rows / 2 - 1) {
+      if (r <= boardTeamsSplit.teamA.rowsEnd) {
         // Team A's half
         let deadOrAlive = Math.floor(Math.random() * 2);
-        board[r][c] = deadOrAlive === 0 ? 1 : 0;
+        board[r][c] = deadOrAlive === 0 ? 0 : 1;
         cellsCountPerEachTeam.teamA =
           (cellsCountPerEachTeam.teamA || 0) + deadOrAlive;
       }
 
-      if (r >= rows / 2) {
+      if (r >= boardTeamsSplit.teamB.rowsStart) {
         // Team B's half
         let deadOrAlive = Math.floor(Math.random() * 2);
-        board[r][c] = deadOrAlive === 0 ? 2 : 0;
+        board[r][c] = deadOrAlive === 0 ? 0 : 2;
         cellsCountPerEachTeam.teamB =
           (cellsCountPerEachTeam.teamB || 0) + deadOrAlive;
       }
