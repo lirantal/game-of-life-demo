@@ -19,6 +19,50 @@ const rows = canvas.height / cellSize;
 const cols = canvas.width / cellSize;
 let board = Array.from({ length: rows }, () => Array(cols).fill(0));
 
+let boardTeamsSplit = {
+  teamA: {
+    rowsStart: 0,
+    rowsEnd: rows / 2 - 1,
+    colsStart: 0,
+    colsEnd: cols - 1,
+  },
+  teamB: {
+    rowsStart: rows / 2,
+    rowsEnd: rows - 1,
+    colsStart: 0,
+    colsEnd: cols - 1,
+  },
+};
+
+// Team A implements their own logic:
+// You get X pixels (not implemented yet below)
+// You can either put them in x,y
+// or save them up and then apply them to create specific shapes
+// in this example, the function simply uses the same randomize logic for placing a cell
+// on the board
+function teamALogic() {
+  const rowsStart = boardTeamsSplit.teamA.rowsStart;
+  const rowsEnd = boardTeamsSplit.teamA.rowsEnd;
+
+  const colsStart = boardTeamsSplit.teamA.colsStart;
+  const colsEnd = boardTeamsSplit.teamA.colsEnd;
+
+  let myBoard = Array.from({ length: rows }, () => Array(cols).fill(0));
+
+  for (let r = rowsStart; r <= rowsEnd; r++) {
+    for (let c = colsStart; c <= colsEnd; c++) {
+      let deadOrAlive = Math.floor(Math.random() * 2);
+      myBoard[r][c] = deadOrAlive === 0 ? 0 : 1;
+
+      if (r === rowsEnd || r === rowsEnd - 1) {
+        myBoard[r][c] = 1;
+      }
+    }
+  }
+
+  return myBoard;
+}
+
 // Initialize the board with random cells so that the rows / cols grid
 // is split between team A and team B horizontally (rows) and random
 // generation of cells for each team is limited to their respective half
@@ -26,17 +70,27 @@ function initializeBoard() {
   // Statistics to keep track of
   let cellsCountPerEachTeam = {};
 
+  const teamABoard = teamALogic();
+
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
-      if (r <= boardTeamsSplit.teamA.rowsEnd) {
-        // Team A's half
-        let deadOrAlive = Math.floor(Math.random() * 2);
-        board[r][c] = deadOrAlive === 0 ? 0 : 1;
-        cellsCountPerEachTeam.teamA =
-          (cellsCountPerEachTeam.teamA || 0) + deadOrAlive;
+      // Team A's half
+      if (
+        r >= boardTeamsSplit.teamA.rowsStart &&
+        r <= boardTeamsSplit.teamA.rowsEnd &&
+        c >= boardTeamsSplit.teamA.colsStart &&
+        c <= boardTeamsSplit.teamA.colsEnd
+      ) {
+        let cellValue = teamABoard[r][c];
+        board[r][c] = cellValue;
       }
 
-      if (r >= boardTeamsSplit.teamB.rowsStart) {
+      if (
+        r >= boardTeamsSplit.teamB.rowsStart &&
+        r <= boardTeamsSplit.teamB.rowsEnd &&
+        c >= boardTeamsSplit.teamB.colsStart &&
+        c <= boardTeamsSplit.teamB.colsEnd
+      ) {
         // Team B's half
         let deadOrAlive = Math.floor(Math.random() * 2);
         board[r][c] = deadOrAlive === 0 ? 0 : 2;
@@ -132,6 +186,7 @@ function gameLoop() {
     return;
   }
 
+  console.log(board);
   gameLoopIterationsCounter++;
 
   setTimeout(() => {
