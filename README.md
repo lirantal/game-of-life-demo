@@ -27,3 +27,7 @@ npm run dev
 ```sh
 npm run build
 ```
+
+## Contributing
+
+Please consult [CONTRIBUTING](./CONTRIBUTING.md) for guidelines on contributing to this project.
